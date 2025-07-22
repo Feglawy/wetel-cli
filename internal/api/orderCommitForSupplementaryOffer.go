@@ -24,5 +24,5 @@ func OrderCommitForSupplementaryOffer(app *app.App, payload payload.OrderCommitF
 	if utils.IsRespSuccessful(body) {
 		body = gjson.Get(body, "body").String()
 	}
-	return body, nil
+	return utils.GetIndentedJson([]byte(body)), nil
 }

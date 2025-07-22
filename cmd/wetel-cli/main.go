@@ -1,69 +1,44 @@
 package main
 
 import (
-	"bufio"
 	"flag"
 	"fmt"
-	"os"
-	"strconv"
-	"strings"
-	"syscall"
 
 	"github.com/Feglawy/wetel-cli/internal/app"
 	"github.com/Feglawy/wetel-cli/internal/core"
 	"github.com/Feglawy/wetel-cli/internal/models"
-	"golang.org/x/term"
+	"github.com/Feglawy/wetel-cli/utils"
 )
 
-type LoginCredentials struct {
-	number string
-	pass   string
-}
+func main() {
+	app := app.NewApp()
+	// env := config.GetEnv()
 
-func askForLoginData() LoginCredentials {
-	data := LoginCredentials{}
-	reader := bufio.NewReader(os.Stdin)
+	var loginCredentials utils.LoginCredentials
 
-	fmt.Print("Service number: ")
-	number, _ := reader.ReadString('\n')
-	data.number = strings.TrimSpace(number)
+	serviceNum := flag.String("num", "", "service number for login e.g 0238900000")
+	password := flag.String("pass", "", "password for login")
+	flag.Parse()
 
-	fmt.Print("Password: ")
-	bytePass, _ := term.ReadPassword(int(syscall.Stdin))
-	data.pass = strings.TrimSpace(string(bytePass))
-	fmt.Println() // For a clean newline after password
+	if *serviceNum == "" || *password == "" { // ask for login credentials
+		loginCredentials.AskForLoginData()
+	} else { // the user passed login credentials as arguments
+		loginCredentials.Number = *serviceNum
+		loginCredentials.Pass = *password
+	}
 
-	return data
-}
+	if err := loginCredentials.ConvServiceNum(); err != nil {
+		fmt.Printf("Error: %s\n", err)
+		return
+	}
 
-func (l *LoginCredentials) ConvServiceNum() error {
-	num, err := strconv.Atoi(l.number)
+	err := core.Login(loginCredentials.Number, loginCredentials.Pass, app)
 	if err != nil {
-		return fmt.Errorf("wrong format for the service number")
+		fmt.Printf("Login failed: %s\n", err)
+		return
 	}
-	l.number = "FBB" + strconv.Itoa(num)
-	return nil
-}
 
-func overview(user *models.User, balance float64, plan *models.Plan) {
-	fmt.Printf("\nHello, %s\n", user.CustomerName)
-	fmt.Printf("Current balance: %.2f\n", balance)
-	fmt.Println("______________________________")
-	fmt.Println("Usage overview")
-	fmt.Printf("Used: %.2f GB\n", plan.Used())
-	fmt.Printf("Remaining: %.2f GB\n", plan.Remain())
-}
-
-func offerUsageOverview(plan *models.Plan) {
-	fmt.Println("______________________________")
-	fmt.Println("Offers usage overview")
-	for _, offer := range plan.Offers {
-		fmt.Printf("Offer: %s\n", offer.Name)
-		fmt.Printf("Total: %.2f GB\n", offer.InitialAmount)
-		fmt.Printf("Remaining: %.2f GB\n", offer.CurrentAmount)
-		fmt.Printf("Used: %.2f GB\n", offer.InitialAmount-offer.CurrentAmount)
-		fmt.Println("---------------------------")
-	}
+	menu(app)
 }
 
 func menu(app *app.App) {
@@ -119,37 +94,23 @@ Menu:
 	}
 }
 
-func main() {
-	app := app.NewApp()
-	// env := config.GetEnv()
+func overview(user *models.User, balance float64, plan *models.Plan) {
+	fmt.Printf("\nHello, %s\n", user.CustomerName)
+	fmt.Printf("Current balance: %.2f\n", balance)
+	fmt.Println("______________________________")
+	fmt.Println("Usage overview")
+	fmt.Printf("Used: %.2f GB\n", plan.Used())
+	fmt.Printf("Remaining: %.2f GB\n", plan.Remain())
+}
 
-	var loginCredentials LoginCredentials
-
-	serviceNum := *flag.String("num", "", "service number for login")
-	password := *flag.String("pass", "", "password for login")
-	flag.Parse()
-
-	// serviceNum := env.ServiceNumber
-	// password := env.Password
-
-	if serviceNum == "" || password == "" {
-		data := askForLoginData()
-		loginCredentials = data
-	} else {
-		loginCredentials.number = serviceNum
-		loginCredentials.pass = password
+func offerUsageOverview(plan *models.Plan) {
+	fmt.Println("______________________________")
+	fmt.Println("Offers usage overview")
+	for _, offer := range plan.Offers {
+		fmt.Printf("Offer: %s\n", offer.Name)
+		fmt.Printf("Total: %.2f GB\n", offer.InitialAmount)
+		fmt.Printf("Remaining: %.2f GB\n", offer.CurrentAmount)
+		fmt.Printf("Used: %.2f GB\n", offer.InitialAmount-offer.CurrentAmount)
+		fmt.Println("---------------------------")
 	}
-
-	if err := loginCredentials.ConvServiceNum(); err != nil {
-		fmt.Printf("Error: %s\n", err)
-		return
-	}
-
-	err := core.Login(loginCredentials.number, loginCredentials.pass, app)
-	if err != nil {
-		fmt.Printf("Login failed: %s\n", err)
-		return
-	}
-
-	menu(app)
 }

@@ -1,10 +1,17 @@
 package utils
 
 import (
+	"bufio"
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"os"
+	"strconv"
+	"strings"
+	"syscall"
 
 	"github.com/tidwall/gjson"
+	"golang.org/x/term"
 )
 
 const (
@@ -34,4 +41,31 @@ func GetIndentedJson(raw []byte) string {
 	jsonRaw, _ := json.MarshalIndent(obj, "", "	")
 	return string(jsonRaw)
 
+}
+
+type LoginCredentials struct {
+	Number string
+	Pass   string
+}
+
+func (l *LoginCredentials) AskForLoginData() {
+	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Print("Service number: ")
+	number, _ := reader.ReadString('\n')
+	l.Number = strings.TrimSpace(number)
+
+	fmt.Print("Password: ")
+	bytePass, _ := term.ReadPassword(int(syscall.Stdin))
+	l.Pass = strings.TrimSpace(string(bytePass))
+	fmt.Println() // For a clean newline after password
+}
+
+func (l *LoginCredentials) ConvServiceNum() error {
+	num, err := strconv.Atoi(l.Number)
+	if err != nil {
+		return fmt.Errorf("wrong format for the service number")
+	}
+	l.Number = "FBB" + strconv.Itoa(num)
+	return nil
 }
