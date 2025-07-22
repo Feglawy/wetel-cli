@@ -10,7 +10,7 @@ import (
 	"github.com/Feglawy/wetel-cli/utils"
 )
 
-func (a *App) HandleRequest(method, url string, payload any) (*http.Response, error) {
+func (a *Client) HandleRequest(method, url string, payload any) (*http.Response, error) {
 	var body io.Reader
 
 	if payload != nil {

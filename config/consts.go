@@ -1,5 +1,7 @@
 package config
 
+const LOGIN_INFO_FILE string = "loginInfo.json"
+
 const (
 	AUTH_URL                  string = "https://my.te.eg/echannel/service/besapp/base/rest/busiservice/v1/auth/userAuthenticate"
 	BALANCE_URL               string = "https://my.te.eg/echannel/service/besapp/base/rest/busiservice/cbs/ar/queryBalance"

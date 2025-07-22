@@ -9,7 +9,7 @@ import (
 	"github.com/Feglawy/wetel-cli/utils"
 )
 
-func (a *App) HandleResponse(resp *http.Response, out models.Scannable) (string, error) {
+func (a *Client) HandleResponse(resp *http.Response, out models.Scannable) (string, error) {
 	defer resp.Body.Close()
 	body, _ := io.ReadAll(resp.Body)
 	if utils.IsRespSuccessful(string(body)) && resp.StatusCode < 400 {

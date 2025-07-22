@@ -5,12 +5,12 @@ import (
 	"net/http"
 
 	"github.com/Feglawy/wetel-cli/config"
-	"github.com/Feglawy/wetel-cli/internal/app"
 	"github.com/Feglawy/wetel-cli/internal/payload"
+	"github.com/Feglawy/wetel-cli/pkg/app"
 	"github.com/tidwall/gjson"
 )
 
-func Auth(a *app.App, payload payload.AuthPayload) error {
+func Auth(a *app.Client, payload payload.AuthPayload) error {
 	resp, err := a.HandleRequest(http.MethodPost, config.AUTH_URL, payload)
 	if err != nil {
 		return fmt.Errorf("couldn't login err: %v", err)

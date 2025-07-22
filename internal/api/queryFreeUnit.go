@@ -5,13 +5,13 @@ import (
 	"net/http"
 
 	"github.com/Feglawy/wetel-cli/config"
-	"github.com/Feglawy/wetel-cli/internal/app"
 	"github.com/Feglawy/wetel-cli/internal/models"
 	"github.com/Feglawy/wetel-cli/internal/payload"
+	"github.com/Feglawy/wetel-cli/pkg/app"
 )
 
 // This gets your plan's info Qouta remaining gbs etc idk why they named it this way
-func QueryFreeUnit(app *app.App, payload payload.Plan) (*models.Plan, error) {
+func QueryFreeUnit(app *app.Client, payload payload.Plan) (*models.Plan, error) {
 	resp, err := app.HandleRequest(http.MethodPost, config.QUERY_FREE_UNIT, payload)
 	if err != nil {
 		return nil, fmt.Errorf("plans info request err: %v", err)

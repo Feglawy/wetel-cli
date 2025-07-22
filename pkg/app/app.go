@@ -7,15 +7,15 @@ import (
 	"github.com/Feglawy/wetel-cli/internal/models"
 )
 
-type App struct {
+type Client struct {
 	Client    *http.Client
 	UserInfo  models.User
 	CSRFToken string
 }
 
-func NewApp() *App {
+func NewClient() *Client {
 	jar, _ := cookiejar.New(nil)
-	return &App{
+	return &Client{
 		Client: &http.Client{Jar: jar},
 	}
 }

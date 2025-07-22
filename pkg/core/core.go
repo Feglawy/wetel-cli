@@ -4,12 +4,12 @@ import (
 	"fmt"
 
 	"github.com/Feglawy/wetel-cli/internal/api"
-	"github.com/Feglawy/wetel-cli/internal/app"
 	"github.com/Feglawy/wetel-cli/internal/models"
 	"github.com/Feglawy/wetel-cli/internal/payload"
+	"github.com/Feglawy/wetel-cli/pkg/app"
 )
 
-func Login(serviceNumber string, password string, a *app.App) error {
+func Login(serviceNumber string, password string, a *app.Client) error {
 	authPayload := *payload.NewAuthPayload(serviceNumber, password)
 	err := api.Auth(a, authPayload)
 	if err != nil {
@@ -18,7 +18,7 @@ func Login(serviceNumber string, password string, a *app.App) error {
 	return nil
 }
 
-func GetBalance(a *app.App) (float64, error) {
+func GetBalance(a *app.Client) (float64, error) {
 	balancePayload := *payload.NewQueryBalancePayload(a.UserInfo.AccountId)
 	balance, err := api.QueryBalance(a, balancePayload)
 	if err != nil {
@@ -27,7 +27,7 @@ func GetBalance(a *app.App) (float64, error) {
 	return balance, nil
 }
 
-func GetPlans(a *app.App) (*models.Plan, error) {
+func GetPlans(a *app.Client) (*models.Plan, error) {
 	planPayload := *payload.NewQueryFreeUnitPayload(a.UserInfo.SubscriberId)
 	plans, err := api.QueryFreeUnit(a, planPayload)
 	if err != nil {
@@ -36,7 +36,7 @@ func GetPlans(a *app.App) (*models.Plan, error) {
 	return plans, nil
 }
 
-func getMainOffer(a *app.App) (*models.Offering, error) {
+func getMainOffer(a *app.Client) (*models.Offering, error) {
 	subOfferpayload := *payload.NewSubOfferPayload(a.UserInfo.ServNumber)
 	offers, _ := api.GetSubscribedOfferings(a, subOfferpayload)
 	var mainOffer models.Offering
@@ -48,7 +48,7 @@ func getMainOffer(a *app.App) (*models.Offering, error) {
 	return &mainOffer, nil
 }
 
-func RenewMainOffer(a *app.App) (string, error) {
+func RenewMainOffer(a *app.Client) (string, error) {
 	mainOffer, err := getMainOffer(a)
 	if err != nil {
 		return "", fmt.Errorf("couldn't load main offer err: %v", err)
