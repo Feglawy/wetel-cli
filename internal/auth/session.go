@@ -2,12 +2,14 @@ package auth
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"os"
 	"strconv"
 	"strings"
 	"syscall"
 
+	"github.com/Feglawy/wetel-cli/config"
 	"golang.org/x/term"
 )
 
@@ -17,16 +19,7 @@ type LoginCredentials struct {
 }
 
 func (l *LoginCredentials) AskForLoginData() {
-	reader := bufio.NewReader(os.Stdin)
 
-	fmt.Print("Service number: ")
-	number, _ := reader.ReadString('\n')
-	l.Number = strings.TrimSpace(number)
-
-	fmt.Print("Password: ")
-	bytePass, _ := term.ReadPassword(int(syscall.Stdin))
-	l.Pass = strings.TrimSpace(string(bytePass))
-	fmt.Println() // For a clean newline after password
 }
 
 func (l *LoginCredentials) ConvServiceNum() error {
@@ -39,11 +32,69 @@ func (l *LoginCredentials) ConvServiceNum() error {
 }
 
 func StoreLoginData(info LoginCredentials) error {
-	// if it doesn't exist create it
-	// write the data in the file rewrite it
+	f, err := os.Create(config.LOGIN_INFO_FILE)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	err = json.NewEncoder(f).Encode(info)
+	if err != nil {
+		return err
+	}
+	err = f.Sync()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
+func ClearLoginData() error {
+	return os.Remove(config.LOGIN_INFO_FILE)
+}
+
 func RetriveLoginData() (*LoginCredentials, error) {
-	return nil, nil
+	file, err := os.Open(config.LOGIN_INFO_FILE)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+	var login LoginCredentials
+	err = json.NewDecoder(file).Decode(&login)
+	if err != nil {
+		return nil, err
+	}
+	return &login, nil
+}
+
+func GetLoginData(serviceNumflag, passflag string) *LoginCredentials {
+	var creds LoginCredentials
+
+	// Check if we should use remembered credentials
+	if serviceNumflag == "" && passflag == "" {
+		remembered, _ := RetriveLoginData()
+		if remembered != nil {
+			fmt.Println("Using remembered credentials.")
+			return remembered
+		}
+	}
+	reader := bufio.NewReader(os.Stdin)
+	if serviceNumflag == "" {
+		fmt.Print("Service number: ")
+		number, _ := reader.ReadString('\n')
+		creds.Number = strings.TrimSpace(number)
+	}
+	if passflag == "" {
+		fmt.Print("Password: ")
+		bytePass, _ := term.ReadPassword(int(syscall.Stdin))
+		creds.Pass = strings.TrimSpace(string(bytePass))
+		fmt.Println() // For a clean newline after password
+	}
+
+	if err := creds.ConvServiceNum(); err != nil {
+		fmt.Printf("Error: %s\n", err)
+		return nil
+	}
+
+	return &creds
 }

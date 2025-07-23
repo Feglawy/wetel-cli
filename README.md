@@ -32,8 +32,22 @@ once you installed it
 ```bash
 wetel-cli
 ```
+Available Flags
+| Flag    | Description                                          | Example                 |
+| ------- | ---------------------------------------------------- | ----------------------- |
+| `-num`  | Service number for login (e.g., your phone number)   | `-num=0238900000`       |
+| `-pass` | Password for login                                   | `-pass=mypass123` |
+| `-r`    | Remember login credentials for future use (optional) | `-r`                    |
 
-You'll be prompted to enter your service number and password securely.
+example:
+```bash
+wetel-cli -num=0238900000 -pass=mypass123 -r
+```
+If no flags are provided, the CLI will prompt you to enter them interactively, with the password hidden during input for security.
+
+## Configuration
+If `-r` is enabled, credentials are stored in your system in a file beside the app called `loginInfo.json`
+you can edit it or delete it so you can login for other accounts
 
 ## 🧰 Requirements
 
