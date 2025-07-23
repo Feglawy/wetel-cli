@@ -83,12 +83,16 @@ func GetLoginData(serviceNumflag, passflag string) *LoginCredentials {
 		fmt.Print("Service number: ")
 		number, _ := reader.ReadString('\n')
 		creds.Number = strings.TrimSpace(number)
+	} else {
+		creds.Number = serviceNumflag
 	}
 	if passflag == "" {
 		fmt.Print("Password: ")
 		bytePass, _ := term.ReadPassword(int(syscall.Stdin))
 		creds.Pass = strings.TrimSpace(string(bytePass))
 		fmt.Println() // For a clean newline after password
+	} else {
+		creds.Pass = passflag
 	}
 
 	if err := creds.ConvServiceNum(); err != nil {

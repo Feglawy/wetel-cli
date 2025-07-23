@@ -48,3 +48,4 @@ go.work
 .env
 bin/*
 json-test/*
+loginInfo.json
