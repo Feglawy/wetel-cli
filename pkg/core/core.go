@@ -54,6 +54,6 @@ func RenewMainOffer(a *app.Client) (string, error) {
 		return "", fmt.Errorf("couldn't load main offer err: %v", err)
 	}
 	orderPayload := *payload.NewRenewOfferPayload(a.UserInfo.SubscriberId, *mainOffer)
-	bodyStr, _ := api.OrderCommitForSupplementaryOffer(a, orderPayload)
-	return bodyStr, nil
+	bodyStr, err := api.OrderCommitForSupplementaryOffer(a, orderPayload)
+	return bodyStr, err
 }

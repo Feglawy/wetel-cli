@@ -21,8 +21,9 @@ func OrderCommitForSupplementaryOffer(app *app.Client, payload payload.OrderComm
 	if err != nil {
 		return body, fmt.Errorf("error with response order supplementry offer err : %v", err)
 	}
+	retMsg := ""
 	if utils.IsRespSuccessful(body) {
-		body = gjson.Get(body, "body").String()
+		retMsg = gjson.Get(body, "body.retMsg").String()
 	}
-	return utils.GetIndentedJson([]byte(body)), nil
+	return retMsg, nil
 }

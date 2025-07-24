@@ -31,7 +31,7 @@ func main() {
 		return
 	}
 	fmt.Println("Login successful!")
-	
+
 	if *remember {
 		err := auth.StoreLoginData(*loginCredentials)
 		if err != nil {
