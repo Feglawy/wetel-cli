@@ -20,7 +20,7 @@ Easily check your service number, balance, data usage, and plan details — all 
 ### Go (recommended)
 
 ```bash
-go install github.com/feglawy/we-cli/cmd/we-cli@latest
+go install github.com/Feglawy/wetel-cli/cmd/wetel-cli@latest
 ```
 
 Make sure your Go binary path is in your PATH. Usually it's:
@@ -36,7 +36,7 @@ Available Flags
 | Flag    | Description                                          | Example                 |
 | ------- | ---------------------------------------------------- | ----------------------- |
 | `-num`  | Service number for login (e.g., your phone number)   | `-num=0238900000`       |
-| `-pass` | Password for login                                   | `-pass=mypass123` |
+| `-pass` | Password for login                                   | `-pass=mypass123`       |
 | `-r`    | Remember login credentials for future use (optional) | `-r`                    |
 
 example:
