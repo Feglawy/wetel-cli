@@ -4,11 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"syscall"
 
 	"github.com/Feglawy/wetel-cli/config"
+	"github.com/Feglawy/wetel-cli/utils"
 	"golang.org/x/term"
 )
 
@@ -27,7 +29,12 @@ func (l *LoginCredentials) ConvServiceNum() error {
 }
 
 func StoreLoginData(info LoginCredentials) error {
-	f, err := os.Create(config.LOGIN_INFO_FILE)
+	configDirPath, err := utils.GetConfigDirPath()
+	if err != nil {
+		return err
+	}
+	filePath := filepath.Join(configDirPath, config.LOGIN_INFO_FILE)
+	f, err := os.Create(filePath)
 	if err != nil {
 		return err
 	}
@@ -45,11 +52,21 @@ func StoreLoginData(info LoginCredentials) error {
 }
 
 func ClearLoginData() error {
-	return os.Remove(config.LOGIN_INFO_FILE)
+	configDirPath, err := utils.GetConfigDirPath()
+	if err != nil {
+		return err
+	}
+	filePath := filepath.Join(configDirPath, config.LOGIN_INFO_FILE)
+	return os.Remove(filePath)
 }
 
 func RetriveLoginData() (*LoginCredentials, error) {
-	file, err := os.Open(config.LOGIN_INFO_FILE)
+	configDirPath, err := utils.GetConfigDirPath()
+	if err != nil {
+		return nil, err
+	}
+	filePath := filepath.Join(configDirPath, config.LOGIN_INFO_FILE)
+	file, err := os.Open(filePath)
 	if err != nil {
 		return nil, err
 	}

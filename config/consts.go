@@ -1,5 +1,6 @@
 package config
 
+const APP_NAME string = "wetel-cli"
 const LOGIN_INFO_FILE string = "loginInfo.json"
 
 const (

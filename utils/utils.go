@@ -3,7 +3,10 @@ package utils
 import (
 	"encoding/json"
 	"net/http"
+	"os"
+	"path/filepath"
 
+	"github.com/Feglawy/wetel-cli/config"
 	"github.com/tidwall/gjson"
 )
 
@@ -33,5 +36,16 @@ func GetIndentedJson(raw []byte) string {
 	json.Unmarshal(raw, &obj)
 	jsonRaw, _ := json.MarshalIndent(obj, "", "	")
 	return string(jsonRaw)
+}
 
+func GetConfigDirPath() (string, error) {
+	configDir, err := os.UserConfigDir()
+	if err != nil {
+		return "", err
+	}
+	appDir := filepath.Join(configDir, config.APP_NAME)
+	if err := os.MkdirAll(appDir, 0700); err != nil {
+		return "", err
+	}
+	return appDir, nil
 }
