@@ -64,10 +64,13 @@ Menu:
 func overview(user *models.User, balance float64, plan *models.Plan) {
 	fmt.Printf("\nHello, %s\n", user.CustomerName)
 	fmt.Printf("Current balance: %.2f\n", balance)
+
 	fmt.Println("______________________________")
+
 	fmt.Println("Usage overview")
 	fmt.Printf("Used: %.2f GB\n", plan.Used())
 	fmt.Printf("Remaining: %.2f GB\n", plan.Remain())
+	fmt.Printf("Remaining days: %v", plan.GetRemainingDays())
 }
 
 func offerUsageOverview(plan *models.Plan) {
@@ -75,9 +78,11 @@ func offerUsageOverview(plan *models.Plan) {
 	fmt.Println("Offers usage overview")
 	for _, offer := range plan.Offers {
 		fmt.Printf("Offer: %s\n", offer.Name)
+		fmt.Printf("Remaining days: %v\n", offer.RemainingDays)
+
 		fmt.Printf("Total: %.2f GB\n", offer.InitialAmount)
-		fmt.Printf("Remaining: %.2f GB\n", offer.CurrentAmount)
 		fmt.Printf("Used: %.2f GB\n", offer.InitialAmount-offer.CurrentAmount)
+		fmt.Printf("Remaining: %.2f GB\n", offer.CurrentAmount)
 		fmt.Println("---------------------------")
 	}
 }

@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"bufio"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -16,10 +15,6 @@ import (
 type LoginCredentials struct {
 	Number string
 	Pass   string
-}
-
-func (l *LoginCredentials) AskForLoginData() {
-
 }
 
 func (l *LoginCredentials) ConvServiceNum() error {
@@ -78,10 +73,10 @@ func GetLoginData(serviceNumflag, passflag string) *LoginCredentials {
 			return remembered
 		}
 	}
-	reader := bufio.NewReader(os.Stdin)
 	if serviceNumflag == "" {
 		fmt.Print("Service number: ")
-		number, _ := reader.ReadString('\n')
+		var number string
+		fmt.Scan(&number)
 		creds.Number = strings.TrimSpace(number)
 	} else {
 		creds.Number = serviceNumflag

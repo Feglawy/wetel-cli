@@ -14,6 +14,16 @@ func (p *Plan) Total() float64 {
 	return total
 }
 
+func (p *Plan) GetRemainingDays() int {
+
+	for _, offer := range p.Offers {
+		if offer.Type == "Main Quota" {
+			return offer.RemainingDays
+		}
+	}
+	return 0
+}
+
 func (p *Plan) Used() float64 {
 	var used float64
 	for _, o := range p.Offers {
