@@ -8,26 +8,25 @@ import (
 	"github.com/Feglawy/wetel-cli/config"
 	"github.com/Feglawy/wetel-cli/internal/api"
 	"github.com/Feglawy/wetel-cli/internal/auth"
-	"github.com/Feglawy/wetel-cli/internal/menu"
 	"github.com/Feglawy/wetel-cli/internal/models"
+	"github.com/Feglawy/wetel-cli/internal/ui"
 	"github.com/Feglawy/wetel-cli/pkg/app"
 	"github.com/Feglawy/wetel-cli/pkg/core"
 	"github.com/Feglawy/wetel-cli/utils"
 )
 
 func main() {
-	run()
-}
-
-func run() {
-	fmt.Println(config.LOGO)
-
 	// Parse CLI flags
 	serviceNum := flag.String("num", "", "service number for login e.g 0238900000")
 	password := flag.String("pass", "", "password for login")
 	remember := flag.Bool("r", false, "remember the login creds")
 	flag.Parse()
 
+	fmt.Println(config.LOGO)
+	run(serviceNum, password, remember)
+}
+
+func run(serviceNum, password *string, remember *bool) {
 	// Initialize core components
 	client := app.NewClient()
 	apiHandler := api.NewAPI(client)
@@ -54,33 +53,6 @@ func run() {
 		}
 	}
 
-	displayOverview(coreHandler, client)
-
-	// Start main menu loop
-	for {
-		switch showMenuAndGetChoice() {
-		case DETAILED_PLANS:
-			fmt.Println("🛠 Detailed plans feature is not yet implemented.")
-		case RENEW_MAIN_PLAN:
-			fmt.Println("🛠 Renew main plan feature is not yet implemented.")
-		case SUBSCRIBE_TO_ADDON:
-			fmt.Println("🛠 Subscribe to addon feature is not yet implemented.")
-		case TOGGLE_REMEMBER_ME:
-			fmt.Println("🛠 Toggle remember me feature is not yet implemented.")
-		case REFRESH:
-			fmt.Println("Refreshing...")
-			run()
-			return
-		case EXIT:
-			fmt.Println("Good Bye!")
-			return
-		default:
-			fmt.Println("Invalid option.")
-		}
-	}
-}
-
-func displayOverview(coreHandler *core.Core, client *app.Client) {
 	wg := sync.WaitGroup{}
 	balanceChan := make(chan utils.Result[float64], 1)
 	planChan := make(chan utils.Result[*models.Plan], 1)
@@ -103,7 +75,52 @@ func displayOverview(coreHandler *core.Core, client *app.Client) {
 	}
 
 	userInfo := client.GetUserInfo()
-	menu.Overview(&userInfo, balanceRes.Val, planRes.Val)
+	ui.Overview(&userInfo, balanceRes.Val, planRes.Val)
+
+	// Start main menu loop
+	for {
+		switch showMenuAndGetChoice() {
+		case DETAILED_PLANS:
+			ui.OfferUsageOverview(planRes.Val)
+		case RENEW_MAIN_PLAN:
+			msg, err := coreHandler.RenewMainOffer(userInfo.ServNumber, userInfo.SubscriberId)
+			if err != nil {
+				fmt.Printf("an error happened during renewing the main plan err: %v \n", err)
+			}
+			fmt.Println(msg)
+		case SUBSCRIBE_TO_ADDON:
+			addonOffers, err := coreHandler.GetAddonOffers(userInfo.ServNumber)
+			if err != nil {
+				fmt.Printf("an error happed while getting the addons offers err: %v", err)
+			} else {
+				addonOffer := ui.ChooseAnADDON(addonOffers)
+				if addonOffer != nil {
+					msg, err := coreHandler.SubscribeToAPlan(userInfo.SubscriberId, *addonOffer)
+					fmt.Println(msg)
+					if err != nil {
+						fmt.Printf("an error happed while subscribing to the addon offer err: %v", err)
+					}
+				}
+			}
+		case TOGGLE_REMEMBER_ME:
+			if _, err := auth.RetriveLoginData(); err != nil {
+				auth.StoreLoginData(*loginCredentials)
+				fmt.Println("Your credentials has been stored")
+			} else {
+				auth.ClearLoginData()
+				fmt.Println("Your credentials has been cleared")
+			}
+		case REFRESH:
+			fmt.Println("Refreshing...")
+			run(serviceNum, password, remember)
+			return
+		case EXIT:
+			fmt.Println("Good Bye!")
+			return
+		default:
+			fmt.Println("Invalid option.")
+		}
+	}
 }
 
 type options int

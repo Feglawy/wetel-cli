@@ -38,11 +38,7 @@ func (core *Core) GetBalance(accountId string) (float64, error) {
 
 func (core *Core) GetPlans(subscriberId string) (*models.Plan, error) {
 	planPayload := *payload.NewQueryFreeUnitPayload(subscriberId)
-	plans, err := core.API.QueryFreeUnit(planPayload)
-	if err != nil {
-		return nil, err
-	}
-	return plans, nil
+	return core.API.QueryFreeUnit(planPayload)
 }
 
 func (core *Core) getMainOffer(servNumber string) (*models.Offering, error) {
@@ -55,6 +51,11 @@ func (core *Core) getMainOffer(servNumber string) (*models.Offering, error) {
 		}
 	}
 	return &mainOffer, nil
+}
+
+func (core *Core) GetAddonOffers(servNumber string) (models.AddOnOffers, error) {
+	payload := *payload.NewGetAddonsPayload(servNumber)
+	return core.API.QueryAvailableAddons(payload)
 }
 
 func (core *Core) RenewMainOffer(servNumber string, subscriberId string) (string, error) {

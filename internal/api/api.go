@@ -16,6 +16,7 @@ type APIHandler interface {
 	Auth(payload payload.AuthPayload) error
 	QueryBalance(payload payload.Balance) (float64, error)
 	QueryFreeUnit(payload payload.Plan) (*models.Plan, error)
+	QueryAvailableAddons(payload payload.Addons) (models.AddOnOffers, error)
 	GetSubscribedOfferings(payload payload.SubOffer) (*models.SubOffers, error)
 	OrderCommitForSupplementaryOffer(payload payload.OrderCommitForSupplementaryOffer) (string, error)
 }

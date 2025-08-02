@@ -31,7 +31,7 @@ func (a *AddOnOffers) ScanJson(jsonStr string) error {
 					ID:                offer.Get("offerId").String(),
 					Name:              offer.Get("offerEnName").String(),
 					AlreadySubscribed: offer.Get("alreadySubscribed").Bool(),
-					Price:             offer.Get("price").Float(),
+					Price:             offer.Get("price").Float() / 10000,
 					GroupName:         parentGroup,
 					GroupType:         groupName,
 				})
