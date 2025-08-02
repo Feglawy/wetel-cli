@@ -54,3 +54,15 @@ func NewRenewOfferPayload(subscriberId string, offer models.Offering) *OrderComm
 		},
 	}
 }
+
+func NewSubscribeToOfferPayload(subscriberId string, offer models.Offering) *OrderCommitForSupplementaryOffer {
+	return &OrderCommitForSupplementaryOffer{
+		BusinessCode: "ChangeOffering",
+		SubscriberID: subscriberId,
+		OwnerType:    "S",
+		OrderInfo:    nil,
+		SubsProductBeanList: []subsProductBeanList{
+			newSubsProductBeanItem(subscriberId, offer, SUBSCRIBE),
+		},
+	}
+}

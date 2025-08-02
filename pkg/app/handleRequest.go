@@ -26,7 +26,7 @@ func (a *Client) HandleRequest(method, url string, payload any) (*http.Response,
 		return nil, fmt.Errorf("create request: %w", err)
 	}
 
-	utils.SetHeaders(req, a.CSRFToken)
+	utils.SetHeaders(req, a.csrfToken)
 
 	return a.Client.Do(req)
 }
