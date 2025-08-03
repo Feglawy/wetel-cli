@@ -6,10 +6,10 @@ import (
 	"sync"
 
 	"github.com/Feglawy/wetel-cli/config"
-	"github.com/Feglawy/wetel-cli/internal/api"
 	"github.com/Feglawy/wetel-cli/internal/auth"
 	"github.com/Feglawy/wetel-cli/internal/models"
 	"github.com/Feglawy/wetel-cli/internal/ui"
+	"github.com/Feglawy/wetel-cli/pkg/api"
 	"github.com/Feglawy/wetel-cli/pkg/app"
 	"github.com/Feglawy/wetel-cli/pkg/core"
 	"github.com/Feglawy/wetel-cli/utils"

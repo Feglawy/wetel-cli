@@ -3,9 +3,9 @@ package core
 import (
 	"fmt"
 
-	"github.com/Feglawy/wetel-cli/internal/api"
 	"github.com/Feglawy/wetel-cli/internal/models"
 	"github.com/Feglawy/wetel-cli/internal/payload"
+	"github.com/Feglawy/wetel-cli/pkg/api"
 )
 
 type Core struct {
