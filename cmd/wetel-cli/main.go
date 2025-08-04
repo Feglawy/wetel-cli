@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"sync"
 
 	"github.com/Feglawy/wetel-cli/config"
 	"github.com/Feglawy/wetel-cli/internal/auth"
@@ -53,22 +52,20 @@ func run(serviceNum, password *string, remember *bool) {
 		}
 	}
 
-	wg := sync.WaitGroup{}
 	balanceChan := make(chan utils.Result[float64], 1)
 	planChan := make(chan utils.Result[*models.Plan], 1)
 
-	utils.RunTask(coreHandler.GetBalance, client.GetUserInfo().AccountId, &wg, balanceChan)
-	utils.RunTask(coreHandler.GetPlans, client.GetUserInfo().SubscriberId, &wg, planChan)
-
-	wg.Wait()
+	utils.RunTask(coreHandler.GetBalance, client.GetUserInfo().AccountId, balanceChan)
+	utils.RunTask(coreHandler.GetPlans, client.GetUserInfo().SubscriberId, planChan)
 
 	balanceRes := <-balanceChan
-	planRes := <-planChan
 
 	if balanceRes.Err != nil {
 		fmt.Printf("Error fetching balance: %s\n", balanceRes.Err)
 		return
 	}
+
+	planRes := <-planChan
 	if planRes.Err != nil {
 		fmt.Printf("Error fetching plans: %s\n", planRes.Err)
 		return
